@@ -117,13 +117,14 @@ class HeartRateApp(App):
         if heart_rate < self.LOWER_THRESHOLD:
             playsound('sound/stilllow.wav')
             return f"Post-Alert: Heart rate is still too low! ({heart_rate} bpm). Please get some rest."
-        elif heart_rate > self.NORMAL_UPPER: 
-             playsound('sound/stillhigh.wav')
-             return f"Post-Alert: Heart rate is still too high! ({heart_rate} bpm). Please get some rest."
+        elif heart_rate > self.NORMAL_UPPER:
+            playsound('sound/stillhigh.wav')
+            return f"Post-Alert: Heart rate is still too high! ({heart_rate} bpm). Please get some rest."
         else:
-             playsound('sound/normal.wav')
-             self.alert_triggered = False  # Reset alert state
-             return f"Post-Alert: Heart rate is back to normal! ({heart_rate} bpm)."
+            playsound('sound/normal.wav')
+            self.alert_triggered = False  # Reset alert state
+            return f"Post-Alert: Heart rate is back to normal! ({heart_rate} bpm)."
 
 if __name__ == '__main__':
     HeartRateApp().run()
+
