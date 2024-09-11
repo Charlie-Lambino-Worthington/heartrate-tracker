@@ -25,6 +25,10 @@ class HeartRateApp(App):
         self.start_button.bind(on_press=self.start_monitoring)
         layout.add_widget(self.start_button)
 
+        # Initialize state variables
+        self.alert_triggered = False
+        self.access_token = None
+
         # Print Fitbit authorization URL
         print("Please go to the following URL and authorize the application:")
         print(get_authorization_url())
@@ -37,10 +41,10 @@ class HeartRateApp(App):
             self.heart_rate_label.text = "Please enter the authorization code."
             return
 
-        access_token = get_access_token(auth_code)
-        if access_token:
+        self.access_token = get_access_token(auth_code)
+        if self.access_token:
             # Use Clock to periodically fetch heart rate data
-            Clock.schedule_interval(lambda dt: self.update_heart_rate_data(access_token), 60)
+            Clock.schedule_interval(self.update_heart_rate_data, 60)
             self.heart_rate_label.text = "Monitoring started..."
         else:
             self.heart_rate_label.text = "Error obtaining access token."
@@ -67,27 +71,48 @@ class HeartRateApp(App):
 
     # Checks heart rate against thresholds and alerts
     def check_heart_rate(self, heart_rate):
-        if heart_rate < self.LOWER_THRESHOLD:
-            playsound('sound/60-.wav')
+         if heart_rate < self.LOWER_THRESHOLD:
+            if not self.alert_triggered:
+                playsound('sound/60-.wav')
+                self.alert_triggered = True
+                Clock.schedule_once(self.recheck_heart_rate, 300)  # Wait 5 minutes
             return f"Alert: Heart rate is too low! ({heart_rate} bpm)"
         elif heart_rate > self.NORMAL_UPPER and heart_rate < self.MINOR_CONCERN_UPPER:
-            playsound('sound/100+.wav')
+            if not self.alert_triggered:
+                playsound('sound/100+.wav')
+                self.alert_triggered = True
+                Clock.schedule_once(self.recheck_heart_rate, 300)  # Wait 5 minutes
             return f"Alert: Heart rate is a little high, get some rest! ({heart_rate} bpm)"
         elif heart_rate > self.MINOR_CONCERN_UPPER and heart_rate < self.MID_CONCERN_UPPER:
-            playsound('sound/115+.wav')
+            if not self.alert_triggered:
+                playsound('sound/115+.wav')
+                self.alert_triggered = True
+                Clock.schedule_once(self.recheck_heart_rate, 300)  # Wait 5 minutes
             return f"Alert: Heart rate is quite high, take your meds and get some rest! ({heart_rate} bpm)"
         elif heart_rate > self.MID_CONCERN_UPPER:
-            playsound('sound/140+.wav')
+            if not self.alert_triggered:
+                playsound('sound/140+.wav')
+                self.alert_triggered = True
+                Clock.schedule_once(self.recheck_heart_rate, 300)  # Wait 5 minutes
             return f"Alert: Heart rate is very high, there may be a problem! ({heart_rate} bpm)"
-
-     def handle_alert(self, message):
-        if message:
-            # Schedule the next check after 5 minutes
-            Clock.schedule_once(lambda dt: self.update_heart_rate_data(), 300)  # 300 seconds = 5 minutes
         else:
-            # If no alert, check immediately
-            self.update_heart_rate_data()
-     # Checks heart rate after waiting period and provides post-alert messages
+            return "Heart rate is normal."
+
+    def recheck_heart_rate(self, dt):
+        if self.access_token:
+            fitbit_data = fetch_fitbit_data(self.access_token)
+            if fitbit_data:
+                try:
+                    heart_rate_values = fitbit_data['activities-heart'][0]['value']['heartRateZones']
+                    current_heart_rate = heart_rate_values[-1]['min']  # Adjust as needed
+                    message = self.check_post_alert_heart_rate(current_heart_rate)
+                    self.heart_rate_label.text = message
+                except (KeyError, IndexError):
+                    self.heart_rate_label.text = "Error extracting heart rate data."
+            else:
+                self.heart_rate_label.text = "Error fetching Fitbit data."
+
+    # Checks heart rate after waiting period and provides post-alert messages
     def check_post_alert_heart_rate(self, heart_rate):
         if heart_rate > self.LOWER_THRESHOLD and heart_rate < self.NORMAL_UPPER:
             playsound('sound/stilllow.wav')
@@ -95,8 +120,9 @@ class HeartRateApp(App):
         elif heart_rate < self.LOWER_THRESHOLD: 
              playsound('sound/stillhigh.wav')
              return f"Post-Alert: Heart rate is still too low! ({heart_rate} bpm). Please get some rest."
-        elif heart_rate > self.NORMAL_UPPER:
+        else:
              playsound('sound/normal.wav')
+             self.alert_triggered = False  # Reset alert state
              return f"Post-Alert: Heart rate is still too high! ({heart_rate} bpm). Please get some rest."
 
 
