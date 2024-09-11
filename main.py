@@ -114,17 +114,16 @@ class HeartRateApp(App):
 
     # Checks heart rate after waiting period and provides post-alert messages
     def check_post_alert_heart_rate(self, heart_rate):
-        if heart_rate > self.LOWER_THRESHOLD and heart_rate < self.NORMAL_UPPER:
+        if heart_rate < self.LOWER_THRESHOLD:
             playsound('sound/stilllow.wav')
-            return f"Post-Alert: Heart rate is back to normal! ({heart_rate} bpm)."
-        elif heart_rate < self.LOWER_THRESHOLD: 
+            return f"Post-Alert: Heart rate is still too low! ({heart_rate} bpm). Please get some rest."
+        elif heart_rate > self.NORMAL_UPPER: 
              playsound('sound/stillhigh.wav')
-             return f"Post-Alert: Heart rate is still too low! ({heart_rate} bpm). Please get some rest."
+             return f"Post-Alert: Heart rate is still too high! ({heart_rate} bpm). Please get some rest."
         else:
              playsound('sound/normal.wav')
              self.alert_triggered = False  # Reset alert state
-             return f"Post-Alert: Heart rate is still too high! ({heart_rate} bpm). Please get some rest."
-
+             return f"Post-Alert: Heart rate is back to normal! ({heart_rate} bpm)."
 
 if __name__ == '__main__':
     HeartRateApp().run()
