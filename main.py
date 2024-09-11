@@ -79,3 +79,6 @@ class HeartRateApp(App):
         elif heart_rate > self.MID_CONCERN_UPPER:
             playsound('sound/140+.wav')
             return f"Alert: Heart rate is very high, there may be a problem! ({heart_rate} bpm)"
+
+if __name__ == '__main__':
+    HeartRateApp().run()
