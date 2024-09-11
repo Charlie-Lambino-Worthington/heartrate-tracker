@@ -49,9 +49,9 @@ class HeartRateApp(App):
         else:
             self.heart_rate_label.text = "Error obtaining access token."
 
-    def update_heart_rate_data(self, access_token):
+    def update_heart_rate_data(self, dt):
         print("Updating heart rate data...")
-        fitbit_data = fetch_fitbit_data(access_token)
+        fitbit_data = fetch_fitbit_data(self.access_token)
         if fitbit_data:
             try:
                 heart_rate_values = fitbit_data['activities-heart'][0]['value']['heartRateZones']
@@ -71,7 +71,7 @@ class HeartRateApp(App):
 
     # Checks heart rate against thresholds and alerts
     def check_heart_rate(self, heart_rate):
-         if heart_rate < self.LOWER_THRESHOLD:
+        if heart_rate < self.LOWER_THRESHOLD:
             if not self.alert_triggered:
                 playsound('sound/60-.wav')
                 self.alert_triggered = True
