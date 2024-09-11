@@ -69,16 +69,16 @@ def fetch_fitbit_data(access_token):
 
 def check_heart_rate(heart_rate):
     if heart_rate < LOWER_THRESHOLD:
-      #  playsound('sound/60-.wav')
+        playsound('sound/60-.wav')
         print(f"Alert: Heart rate is too low! ({heart_rate} bpm)")
     elif heart_rate > NORMAL_UPPER and heart_rate < MINOR_CONCERN_UPPER:
-      #  playsound('sound/100+.wav')
+        playsound('sound/100+.wav')
         print(f"Alert: Heart rate is a little high, get some rest! ({heart_rate} bpm)")    
     elif heart_rate > MINOR_CONCERN_UPPER and heart_rate < MID_CONCERN_UPPER:
-       # playsound('sound/115+.wav')
+        playsound('sound/115+.wav')
         print(f"Alert: Heart rate is a quite high, take your meds and get some rest! ({heart_rate} bpm)")    
     elif heart_rate > MID_CONCERN_UPPER:
-       # playsound('sound/140+.wav')
+        playsound('sound/140+.wav')
         print(f"Alert: Heart rate is a really very high, are you doing intense exercise? there may be a problem, take your meds and get some rest! ({heart_rate} bpm)")   
 
 def real_time_monitoring():
