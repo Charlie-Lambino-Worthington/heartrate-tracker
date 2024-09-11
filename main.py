@@ -80,5 +80,25 @@ class HeartRateApp(App):
             playsound('sound/140+.wav')
             return f"Alert: Heart rate is very high, there may be a problem! ({heart_rate} bpm)"
 
+     def handle_alert(self, message):
+        if message:
+            # Schedule the next check after 5 minutes
+            Clock.schedule_once(lambda dt: self.update_heart_rate_data(), 300)  # 300 seconds = 5 minutes
+        else:
+            # If no alert, check immediately
+            self.update_heart_rate_data()
+     # Checks heart rate after waiting period and provides post-alert messages
+    def check_post_alert_heart_rate(self, heart_rate):
+        if heart_rate > self.LOWER_THRESHOLD and heart_rate < self.NORMAL_UPPER:
+            playsound('sound/stilllow.wav')
+            return f"Post-Alert: Heart rate is back to normal! ({heart_rate} bpm)."
+        elif heart_rate < self.LOWER_THRESHOLD: 
+             playsound('sound/stillhigh.wav')
+             return f"Post-Alert: Heart rate is still too low! ({heart_rate} bpm). Please get some rest."
+        elif heart_rate > self.NORMAL_UPPER:
+             playsound('sound/normal.wav')
+             return f"Post-Alert: Heart rate is still too high! ({heart_rate} bpm). Please get some rest."
+
+
 if __name__ == '__main__':
     HeartRateApp().run()
