@@ -1,13 +1,14 @@
 import requests
 from base64 import b64encode
+import config  # Import the configuration settings
 
-# Fitbit OAuth 2.0 credentials and URLs
-CLIENT_ID = '23PKKT'
-CLIENT_SECRET = '849d797008283a32fa95d1d26f7b849a'
-REDIRECT_URI = 'http://localhost:8080/callback'
-AUTHORIZATION_URL = 'https://www.fitbit.com/oauth2/authorize'
-TOKEN_URL = 'https://api.fitbit.com/oauth2/token'
-HEART_RATE_URL = 'https://api.fitbit.com/1/user/-/activities/heart/date/today/1d.json'
+# Use constants from config.py
+CLIENT_ID = config.FITBIT_CLIENT_ID
+CLIENT_SECRET = config.FITBIT_CLIENT_SECRET
+REDIRECT_URI = config.REDIRECT_URI
+AUTHORIZATION_URL = config.AUTHORIZATION_URL
+TOKEN_URL = config.TOKEN_URL
+HEART_RATE_URL = config.HEART_RATE_URL
 
 def get_authorization_url():
     params = {
