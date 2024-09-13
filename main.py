@@ -24,6 +24,11 @@ class HeartRateApp(App):
         self.start_button = Button(text='Start Monitoring')
         self.start_button.bind(on_press=self.start_monitoring)
         layout.add_widget(self.start_button)
+        
+        # Retry Button to Restart Monitoring
+        self.retry_button = Button(text='Retry Monitoring')
+        self.retry_button.bind(on_press=self.restart_monitoring)
+        layout.add_widget(self.retry_button)
 
         # Initialize state variables
         self.alert_triggered = False
@@ -55,6 +60,13 @@ class HeartRateApp(App):
         if fitbit_data:
             try:
                 heart_rate_values = fitbit_data['activities-heart'][0]['value']['heartRateZones']
+                
+                # Check if heart rate values exist (meaning if the watch is being worn)
+                if not heart_rate_values:
+                    self.heart_rate_label.text = "You have either taken your watch off or died."
+                    Clock.unschedule(self.update_heart_rate_data)  # Stop monitoring
+                    return
+                
                 current_heart_rate = heart_rate_values[-1]['min']  # Adjust as needed
                 message = self.check_heart_rate(current_heart_rate)
                 self.heart_rate_label.text = message
@@ -62,6 +74,7 @@ class HeartRateApp(App):
                 self.heart_rate_label.text = "Error extracting heart rate data."
         else:
             self.heart_rate_label.text = "Error fetching Fitbit data."
+
 
     # Defines thresholds
     LOWER_THRESHOLD = 60
