@@ -1,10 +1,12 @@
 [app]
 
+requirements = kivy, playsound, requests, other_dependencies
+
 # (str) Title of your application
-title = My Application
+title = pots heartrate monmitor app beta
 
 # (str) Package name
-package.name = myapp
+package.name = pots_heartrate_monmitor_app_beta
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
